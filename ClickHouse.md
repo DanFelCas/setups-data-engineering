@@ -1,15 +1,14 @@
-# ClickHose Setup Guide (Ubuntu)
+# 🚀 ClickHouse Setup Guide (Ubuntu)
 
-This guide walks you through installing ClickHouse on Ubuntu, configuring users, enabling remote access, and applying basic security best practices.
+This guide walks you through installing ClickHouse on Ubuntu, configuring users and roles, enabling remote access, and applying basic security best practices.
 
 ---
 
-## Installation
+## 📦 Installation
 
-### Setup Debian Ropository 
+###  Set Up the ClickHouse APT Repository
 
-- You can replace stable with lts to use different release kinds based on your needs.
-- You can download and install packages manually from packages.clickhouse.com.
+You can install the latest stable or LTS release. The LTS version is recommended for production environments.
 
 #### Option 1: Install Latest Version
 
@@ -30,33 +29,7 @@ echo "deb [signed-by=/usr/share/keyrings/clickhouse-keyring.gpg arch=${ARCH}] ht
 sudo apt-get update
 ```
 
-#### Option 2: Install Specific Version
-
-```bash
-# Install prerequisite packages
-sudo apt-get install apt-transport-https ca-certificates dirmngr
-
-# Add the ClickHouse GPG key to authenticate packages
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8919F6BD2B48D754
-
-# Add the ClickHouse repository to apt sources
-echo "deb https://packages.clickhouse.com/deb stable main" | sudo tee \
-    /etc/apt/sources.list.d/clickhouse.list
-    
-# Update apt package lists
-sudo apt-get update
-
-# Install ClickHouse server and client packages
-sudo apt-get install -y clickhouse-server clickhouse-client
-
-# Start the ClickHouse server service
-sudo service clickhouse-server start
-
-# Launch the ClickHouse command line client
-clickhouse-client # or "clickhouse-client --password" if you set up a password.
-```
-
-### Install Clickhouse Server and Client
+### 💾 Install ClickHouse Server and Client
 
 ```bash
 sudo apt-get install -y clickhouse-server clickhouse-client
@@ -64,52 +37,93 @@ sudo apt-get install -y clickhouse-server clickhouse-client
 
 ---
 
-## Start ClickHouse
+## 🚀 Start and Enable ClickHouse
 
 ```bash
 sudo systemctl start clickhouse-server
+sudo systemctl enable clickhouse-server
 ```
 
+### Check Server Status
+
+```bash
+sudo systemctl status clickhouse-server
+```
+
+---
+
 ### Check connection
+
+## 🔍 Test ClickHouse Client
 
 ```bash
 clickhouse-client
 ```
 
-If you set a password then you will need to 
+If you have a password set:
+
 ```bash
 clickhouse-client --password
 ```
 
 ---
 
-## Basic Setup
+## 🌐 Enable Remote Access
 
-## Enable Remote Connections
-
-### Allow ClickHouse to Listen on All IPs
-
-Edit the config file:
+### Edit Configuration
 
 ```bash
 sudo nano /etc/clickhouse-server/config.xml
 ```
 
-Find and update:
+Find and set:
 
 ```xml
 <listen_host>0.0.0.0</listen_host>
 ```
 
-Set up web UI Tabix
-Find http_server_default_response and uncomment it
-```xml
+> 💡 Optionally, enable HTTP UI tools like Tabix by ensuring `<http_server_default_response>` is not commented out.
 
+### Apply Changes
+
+```bash
+sudo systemctl restart clickhouse-server
 ```
 
 ---
 
-### Apply Changes
+## 🔐 Create Admin User (XML Method - Optional)
+
+> ⚠️ XML user creation is optional and less flexible than SQL. Prefer SQL unless needed for bootstrap.
+
+### Back Up and Edit Config
+
+```bash
+sudo nano /etc/clickhouse-server/users.xml
+```
+
+Add before `<default>`:
+
+```xml
+<admin>
+    <password_sha256_hex>your_sha256_password_here</password_sha256_hex>
+    <networks>
+        <ip>::/0</ip>
+    </networks>
+    <access_management>1</access_management>
+    <named_collection_control>1</named_collection_control>
+    <show_named_collections>1</show_named_collections>
+    <show_named_collections_secrets>1</show_named_collections_secrets>
+</admin>
+```
+
+Generate the password hash:
+
+```bash
+echo -n 'your_password' | sha256sum | awk '{print $1}'
+```
+
+Restart the server:
 
 ```bash
 sudo systemctl restart clickhouse-server
@@ -152,20 +166,28 @@ Then include right before default:
         </admin>
 ```
 
-#### Create Regular User
+## 👤 Create Users and Roles via SQL (Recommended)
 
-```sql
-CREATE USER user_name IDENTIFIED WITH plaintext_password BY 'my_secure_password';
+### Connect as Admin
 
+```bash
+clickhouse-client --user admin --password
 ```
 
-#### Create Role
+### Create User
+
+```sql
+CREATE USER user_name IDENTIFIED WITH plaintext_password BY 'secure_password';
+```
+
+### Create Role
+
 ```sql
 CREATE ROLE role_name;
 ```
 
-Grant role to user
-```sql
+Grant role to user:
+```sql 
 GRANT analyst TO daniel;
 ```
 
@@ -175,82 +197,27 @@ SET DEFAULT ROLE readonly TO user;
 ```
 ---
 
-### Grant Permissions
+## 🎯 Grant Database Permissions
 
 ```sql
--- Grant access to public schema
-GRANT USAGE ON your_database.* TO your_user;
+-- Grant basic read access
+GRANT USAGE ON your_database.* TO daniel;
+GRANT SELECT ON your_database.* TO daniel;
 
--- Grant SELECT on existing tables
-GRANT SELECT ON your_database.* TO your_user;
+-- (Optional) Grant full access
+GRANT ALL ON your_database.* TO daniel;
 ```
 
 ---
 
-
-
-## 🛠 Useful Commands
-
-### PostgreSQL Prompt
+## 🔥 Configure Firewall for Remote Access (Optional)
 
 ```bash
-sudo -u postgres psql
+sudo ufw allow 8123/tcp    # HTTP interface
+sudo ufw allow 9000/tcp    # Native TCP interface
+sudo ufw enable
 ```
 
-### Inside psql
-
-```sql
--- List roles
-\du
-
--- List databases
-\l
-
--- Connect to a database
-\c your_database
-
--- List schemas and tables
-\dn
-\dt
-```
-
-### Connect From a Client Machine
-
-```bash
-psql -h <server_ip> -U your_user -d your_database -W
-```
-
----
-
-## 💾 Backup & Restore (Optional)
-
-### Backup
-
-```bash
-pg_dump -U your_user -d your_database -F c -f db.backup
-```
-
-### Restore
-
-```bash
-pg_restore -U your_user -d new_database db.backup
-```
-
-> 📝 You must create the target database (`new_database`) beforehand.
-
----
-
-## 📖 Resources
-
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [pg_hba.conf Explained](https://www.postgresql.org/docs/current/auth-pg-hba-conf.html)
-- [pgAdmin (GUI Tool)](https://www.pgadmin.org/)
-- [PostgreSQL Cheat Sheet](https://github.com/enochtangg/quick-SQL-cheatsheet)
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome! If you want to contribute major changes, please open an issue first to discuss what you'd like to add or modify.
+> ⚠️ Only expose ports if needed, and restrict by IP range when possible.
 
 ---

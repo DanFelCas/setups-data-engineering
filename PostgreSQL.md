@@ -3,20 +3,6 @@
 This guide walks you through installing PostgreSQL on Ubuntu, configuring users, enabling remote access, and applying basic security best practices.
 
 ---
-## 📚 Table of Contents
-
-- [📦 Installation](#-installation)
-  - [Install Latest Version](#install-latest-version)
-  - [Install Specific Version](#install-specific-version)
-- [⚙️ Basic Setup](#️-basic-setup)
-  - [Set Postgres Password](#set-postgres-password)
-  - [Create Roles and Users](#create-roles-and-users)
-  - [Grant Permissions](#grant-permissions)
-- [🌐 Enable Remote Connections](#-enable-remote-connections)
-- [🔐 Security Notes](#-security-notes)
-- [🛠 Useful Commands](#-useful-commands)
-
----
 
 ## 📦 Installation
 
@@ -222,11 +208,5 @@ pg_restore -U your_user -d new_database db.backup
 - [pg_hba.conf Explained](https://www.postgresql.org/docs/current/auth-pg-hba-conf.html)
 - [pgAdmin (GUI Tool)](https://www.pgadmin.org/)
 - [PostgreSQL Cheat Sheet](https://github.com/enochtangg/quick-SQL-cheatsheet)
-
----
-
-## 🤝 Contributing
-
-Pull requests are welcome! If you want to contribute major changes, please open an issue first to discuss what you'd like to add or modify.
 
 ---
