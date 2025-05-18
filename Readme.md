@@ -46,20 +46,8 @@ Each guide is a standalone Markdown file that includes:
 You can open any guide directly in GitHub or clone the repo and read them locally.
 
 ```bash
-git clone https://github.com/your-username/data-platform-setup-guides.git
+git clone https://git@github.com:DanFelCas/setups-data-engineering.git
 cd data-platform-setup-guides
 ```
-
----
-
-## 📎 License
-
-This project is licensed under the [MIT License](./LICENSE).
-
----
-
-## 🙋‍♂️ Questions / Issues
-
-If you find any issues in the guides or want to suggest improvements, feel free to open an issue or pull request.
 
 ---
