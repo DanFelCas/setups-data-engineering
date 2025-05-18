@@ -18,7 +18,6 @@ This guide walks you through installing PostgreSQL on Ubuntu, configuring users,
 
 ---
 
-
 ## 📦 Installation
 
 ### Install Latest Version
