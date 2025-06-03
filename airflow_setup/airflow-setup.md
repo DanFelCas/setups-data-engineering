@@ -16,7 +16,7 @@ curl -LfO 'https://airflow.apache.org/docs/apache-airflow/2.9.3/docker-compose.y
 
 > ⚙️ If you're using your own version, refer to [`docker-compose.yaml`](https://github.com/your-org/airflow-setup/blob/main/docker-compose.yaml)
 
-### 🔹 Step 2: Create Required Directories
+### Step 2: Create Required Directories
 
 ```bash
 mkdir -p ./dags ./logs ./plugins
