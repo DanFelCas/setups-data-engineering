@@ -9,7 +9,7 @@ This repository contains complete setup guides for building and managing a moder
 | [ClickHouse](./clickhouse-setup.md) | High-performance columnar OLAP database, optimized for real-time analytics. |
 | [PostgreSQL](./postgresql-setup.md) | Powerful open-source relational database for transactional workloads.        |
 | [Apache Superset](./superset-setup.md) | Modern data exploration and visualization platform.                        |
-| [Apache Airflow](./airflow-setup.md) | Workflow orchestration tool for authoring, scheduling, and monitoring ETL pipelines. |
+| [Apache Airflow](./airflow_setup/airflow-setup.md) | Workflow orchestration tool for authoring, scheduling, and monitoring ETL pipelines. |
 
 ---
 
@@ -47,7 +47,7 @@ You can open any guide directly in GitHub or clone the repo and read them locall
 
 ```bash
 git clone https://git@github.com:DanFelCas/setups-data-engineering.git
-cd data-platform-setup-guides
+cd setups-data-engineering
 ```
 
 ---
